@@ -35,38 +35,38 @@ def make_command_list(task_number):
     command_list = ['qsub','-cwd','-t',task_number,command] + args_to_command
     return command_list
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-c',help='command (normally shell script)')
-parser.add_argument('-a',nargs='*',help='input arguments',default=[])
-parser.add_argument('-t',help='task id list as csv e.g. -t "1,2,3,4,5"')
-parser.add_argument('-i',default=None,help='input file list(instead of task id list')
-parser.add_argument('-f',default=None,help='filelist to read input from - only used with -i ')
-args = parser.parse_args()
 
-if args.c is None:
-    raise(ValueError('requires -c command argument'))
-
-if args.t is None:
-    raise(ValueError('requires -t command argument'))
-
-
-# if input file list instead of task id then find task id
-if args.i is not None:
-    print(args.f[0])
-    filelist = pd.read_csv(args.f, sep = ' ',names=['id','path'],dtype={'id':str})
-    id_list = args.i.split(',')
-    id_list = [x.replace(' ','') for x in id_list]
-    print(id_list)
-    task_list = filelist[filelist['id'].isin(id_list)].index.astype('str').values
-    print(task_list)
-else:
-    input_task_list = args.t
-    task_list = split_task_list(input_task_list)
-
-command = args.c
-args_to_command = args.a
 
 if __name__=='__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c',help='command (normally shell script)')
+    parser.add_argument('-a',nargs='*',help='input arguments',default=[])
+    parser.add_argument('-t',help='task id list as csv e.g. -t "1,2,3,4,5"')
+    parser.add_argument('-i',default=None,help='input file list(instead of task id list')
+    parser.add_argument('-f',default=None,help='filelist to read input from - only used with -i ')
+    args = parser.parse_args()
+
+    if args.c is None:
+        raise(ValueError('requires -c command argument'))
+
+    if args.t is None:
+        raise(ValueError('requires -t command argument'))
+
+    # if input file list instead of task id then find task id
+    if args.i is not None:
+        print(args.f[0])
+        filelist = pd.read_csv(args.f, sep = ' ',names=['id','path'],dtype={'id':str})
+        id_list = args.i.split(',')
+        id_list = [x.replace(' ','') for x in id_list]
+        print(id_list)
+        task_list = filelist[filelist['id'].isin(id_list)].index.astype('str').values
+        print(task_list)
+    else:
+        input_task_list = args.t
+        task_list = split_task_list(input_task_list)
+
+    command = args.c
+    args_to_command = args.a
 
     print('task list',task_list)
     for task in task_list:
